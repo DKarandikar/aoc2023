@@ -1,4 +1,4 @@
-from src.day4 import Card
+from src.day4 import Card, CardStack
 
 test_input = """Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
 Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
@@ -22,4 +22,4 @@ def test_score():
 
 
 def test_score_sum():
-    assert sum([Card.from_str(line).score() for line in test_input.split("\n")]) == 13
+    assert CardStack.from_str(test_input).sum() == 13
