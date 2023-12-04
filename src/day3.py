@@ -26,15 +26,17 @@ class Schematic:
     numbers: list[Number]
     symbols: list[Symbol]
 
-    def part_sum(self):
-        res = 0
+    def parts(self):
+        parts = []
         symbol_lookup = [(s.x, s.y) for s in self.symbols]
         for number in self.numbers:
             ns = number.neighbours()
             if any([n in symbol_lookup for n in ns]):
-                res += number.number
+                parts.append(number)
+        return parts
 
-        return res
+    def part_sum(self):
+        return sum([n.number for n in self.parts()])
 
     def gear_ratio_sum(self):
         res = 0
