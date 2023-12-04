@@ -1,4 +1,4 @@
-from src.day2 import part1, parse_game
+from src.day2 import part1, parse_game, part2
 
 test_input = """Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
@@ -18,3 +18,7 @@ def test_parse_game():
 
 def test_example_part1():
     assert part1(12, 13, 14, test_input) == 8
+
+
+def test_example_part2():
+    assert part2(test_input) == 2286

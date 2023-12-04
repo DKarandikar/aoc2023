@@ -14,6 +14,13 @@ class Game:
     number: int
     guesses: list[Guess]
 
+    def power(self):
+        r_p = max([guess.red or 0 for guess in self.guesses])
+        b_p = max([guess.blue or 0 for guess in self.guesses])
+        g_p = max([guess.green or 0 for guess in self.guesses])
+
+        return r_p * b_p * g_p
+
 
 def get_or_null(t) -> None | int:
     try:
@@ -61,11 +68,20 @@ def part1(red: int, green: int, blue: int, input: str):
     return res
 
 
+def part2(input: str):
+    res = 0
+    for line in input.split("\n"):
+        game = parse_game(line)
+        res += game.power()
+    return res
+
+
 def main():
     with open("../data/day2.txt") as f:
         lines = f.read()
 
     print(f"Day 2 part 1 is: {part1(12, 13, 14, lines)}")
+    print(f"Day 2 part 2 is: {part2(lines)}")
 
 
 if __name__ == "__main__":
