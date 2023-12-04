@@ -42,16 +42,21 @@ class Schematic:
         res = 0
         for symbol in self.symbols:
             if symbol.symbol == "*":
-                rel_numbers = list(filter(lambda n: symbol.y - 1 <= n.y <= symbol.y + 1, self.numbers))
-                parts = []
-                for number in rel_numbers:
-                    if (symbol.x, symbol.y) in number.neighbours():
-                        parts.append(number)
-
-                if len(parts) == 2:
-                    res += (parts[0].number * parts[1].number)
+                if (ratio := gear_ratio(symbol, self.numbers)) is not None:
+                    res += ratio
 
         return res
+
+
+def gear_ratio(symbol: Symbol, numbers: list[Number]) -> int | None:
+    rel_numbers = list(filter(lambda n: symbol.y - 1 <= n.y <= symbol.y + 1, numbers))
+    parts = []
+    for number in rel_numbers:
+        if (symbol.x, symbol.y) in number.neighbours():
+            parts.append(number)
+
+    if len(parts) == 2:
+        return parts[0].number * parts[1].number
 
 
 def parse_line(row: int, line: str) -> Schematic:
