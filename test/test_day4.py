@@ -23,3 +23,7 @@ def test_score():
 
 def test_score_sum():
     assert CardStack.from_str(test_input).sum() == 13
+
+
+def test_instance_sum():
+    assert CardStack.from_str(test_input).instance_sum() == 30

@@ -25,6 +25,14 @@ class Card:
 
         return res
 
+    def winning_numbers(self) -> int:
+        res = 0
+        for winning in self.winning:
+            if winning in self.yours:
+                res += 1
+
+        return res
+
 
 @dataclass
 class CardStack:
@@ -39,8 +47,22 @@ class CardStack:
             cards.append(card)
         return CardStack(cards, [1] * len(cards))
 
+    def _process_card(self, number: int):
+        card = self.cards[number]
+        winning = card.winning_numbers()
+        for x in range(winning):
+            self.instances[number + 1 + x] += self.instances[number]
+
+    def _process_stack(self):
+        for i in range(len(self.cards)):
+            self._process_card(i)
+
     def sum(self):
         return sum([c.score() for c in self.cards])
+
+    def instance_sum(self):
+        self._process_stack()
+        return sum(self.instances)
 
 
 def main():
@@ -48,6 +70,7 @@ def main():
         lines = f.read()
 
     print(f"Day 4 part 1 is: {CardStack.from_str(lines).sum()}")
+    print(f"Day 4 part 2 is: {CardStack.from_str(lines).instance_sum()}")
 
 
 if __name__ == "__main__":
