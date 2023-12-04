@@ -1,4 +1,4 @@
-from src.day3 import parse_line, parse_schematic, part1
+from src.day3 import parse_line, parse_schematic
 
 test_input = """467..114..
 ...*......
@@ -42,6 +42,12 @@ def test_neighbours():
 
 
 def test_part1():
-    r = part1(test_input)
+    schematic = parse_schematic(test_input)
 
-    assert r == 4361
+    assert schematic.part_sum() == 4361
+
+
+def test_part2():
+    schematic = parse_schematic(test_input)
+
+    assert schematic.gear_ratio_sum() == 467835

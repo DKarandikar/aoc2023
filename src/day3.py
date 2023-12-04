@@ -26,6 +26,31 @@ class Schematic:
     numbers: list[Number]
     symbols: list[Symbol]
 
+    def part_sum(self):
+        res = 0
+        symbol_lookup = [(s.x, s.y) for s in self.symbols]
+        for number in self.numbers:
+            ns = number.neighbours()
+            if any([n in symbol_lookup for n in ns]):
+                res += number.number
+
+        return res
+
+    def gear_ratio_sum(self):
+        res = 0
+        for symbol in self.symbols:
+            if symbol.symbol == "*":
+                rel_numbers = list(filter(lambda n: symbol.y - 1 <= n.y <= symbol.y + 1, self.numbers))
+                parts = []
+                for number in rel_numbers:
+                    if (symbol.x, symbol.y) in number.neighbours():
+                        parts.append(number)
+
+                if len(parts) == 2:
+                    res += (parts[0].number * parts[1].number)
+
+        return res
+
 
 def parse_line(row: int, line: str) -> Schematic:
     symbols = []
@@ -57,23 +82,13 @@ def parse_schematic(input: str) -> Schematic:
     return Schematic(numbers, symbols)
 
 
-def part1(input: str):
-    res = 0
-    schematic = parse_schematic(input)
-    symbol_lookup = [(s.x, s.y) for s in schematic.symbols]
-    for number in schematic.numbers:
-        ns = number.neighbours()
-        if any([n in symbol_lookup for n in ns]):
-            res += number.number
-
-    return res
-
-
 def main():
     with open("../data/day3.txt") as f:
         lines = f.read()
 
-    print(f"Day 3 part 1 is: {part1(lines)}")
+    schematic = parse_schematic(lines)
+    print(f"Day 3 part 1 is: {schematic.part_sum()}")
+    print(f"Day 3 part 2 is: {schematic.gear_ratio_sum()}")
 
 
 if __name__ == "__main__":
