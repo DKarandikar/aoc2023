@@ -1,4 +1,4 @@
-from src.day5 import Mapping, Input
+from src.day5 import Mapping, Input, Range, collapse_ranges
 
 test_input = """seeds: 79 14 55 13
 
@@ -35,6 +35,20 @@ humidity-to-location map:
 56 93 4"""
 
 
+def test_collapse_ranges():
+    assert collapse_ranges([Range(45, 5), Range(52, 48), Range(50, 2), Range(100, 45)]) == [Range(45, 100)]
+    assert collapse_ranges([Range(45, 5), Range(100, 45)]) == [Range(45, 5), Range(100, 45)]
+    assert collapse_ranges([Range(45, 5), Range(52, 48), Range(100, 45)]) == [Range(45, 5), Range(52, 93)]
+
+
+def test_map_range():
+    inp = Input.from_str(test_input)
+
+    assert inp.maps[0].map_range(Range(45, 20)) == [Range(45, 5), Range(52, 15)]
+
+    assert inp.maps[0].map_range(Range(45, 100)) == [Range(45, 100)]
+
+
 def test_parse_input():
     inp = Input.from_str(test_input)
 
@@ -64,3 +78,15 @@ def test_process_input():
     inp = Input.from_str(test_input)
 
     assert inp.min_location() == 35
+
+
+def test_seed_ranges():
+    inp = Input.from_str(test_input)
+
+    assert inp.seed_ranges() == [Range(79, 14), Range(55, 13)]
+
+
+def test_process_input_ranges():
+    inp = Input.from_str(test_input)
+
+    assert inp.min_location_ranges() == 46
