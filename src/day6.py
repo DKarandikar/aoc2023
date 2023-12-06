@@ -19,6 +19,17 @@ class Race:
 
         return rv
 
+    @staticmethod
+    def from_str_single(s: str) -> 'Race':
+        lines = s.split("\n")
+        times = lines[0].split("Time:")[1].split()
+        distances = lines[1].split("Distance:")[1].split()
+
+        time = "".join(times)
+        distance = "".join(distances)
+
+        return Race(int(distance), int(time))
+
     def solve(self) -> float:
         """ Solve for minimum time to wait before letting go to beat the record, returns the lower solution"""
         # Analytically, x(t-x)=d to solve, so x^2 - tx + d = 0, so x = (t +/- sqrt(t^2 - 4d))/2
@@ -39,6 +50,7 @@ def main():
         lines = f.read()
 
     print(f"Day 6 part 1 is: {math.prod([r.error_margin() for r in Race.from_str(lines)])}")
+    print(f"Day 6 part 2 is: {Race.from_str_single(lines).error_margin()}")
 
 
 if __name__ == "__main__":

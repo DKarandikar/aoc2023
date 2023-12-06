@@ -26,6 +26,12 @@ def test_solve():
 def test_error():
     races = Race.from_str(test_input)
 
-    assert math.ceil(races[0].error_margin()) == 4
-    assert math.ceil(races[1].error_margin()) == 8
-    assert math.ceil(races[2].error_margin()) == 9
+    assert races[0].error_margin() == 4
+    assert races[1].error_margin() == 8
+    assert races[2].error_margin() == 9
+
+
+def test_error_single():
+    race = Race.from_str_single(test_input)
+
+    assert race.error_margin() == 71503
