@@ -39,10 +39,7 @@ class Race:
 
     def error_margin(self) -> int:
         solution = math.ceil(self.solve())
-        if self.time % 2 == 0:
-            return 1 + (2 * (self.time//2 - solution))
-        else:
-            return 2 * (math.ceil(self.time * 1.0/2) - solution)
+        return self.time + 1 - 2 * solution
 
 
 def main():
