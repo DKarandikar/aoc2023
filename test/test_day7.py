@@ -24,3 +24,9 @@ def test_winnings():
     handList = HandList.from_str(test_input)
 
     assert handList.total_winnings() == 6440
+
+
+def test_winnings_with_jokers():
+    handList = HandList.from_str(test_input, True)
+
+    assert handList.total_winnings() == 5905
