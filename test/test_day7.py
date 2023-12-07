@@ -21,12 +21,12 @@ def test_ordering():
 
 
 def test_winnings():
-    handList = HandList.from_str(test_input)
+    hand_list = HandList.from_str(test_input)
 
-    assert handList.total_winnings() == 6440
+    assert hand_list.total_winnings() == 6440
 
 
 def test_winnings_with_jokers():
-    handList = HandList.from_str(test_input, True)
+    hand_list = HandList.from_str(test_input, True)
 
-    assert handList.total_winnings() == 5905
+    assert hand_list.total_winnings() == 5905
