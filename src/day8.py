@@ -18,14 +18,9 @@ class Node:
 
 
 @dataclass
-class Network:
-    nodes: dict[str, Node]
-
-
-@dataclass
 class Instructions:
     sequence: str
-    network: Network
+    nodes: dict[str, Node]
 
     @staticmethod
     def from_str(s: str):
@@ -37,7 +32,7 @@ class Instructions:
             node = Node.from_str(line)
             nodes[node.label] = node
 
-        return Instructions(sequence, Network(nodes))
+        return Instructions(sequence, nodes)
 
     def steps(self, start: str = "AAA", end_fn: Callable[[str], bool] = lambda x: x == 'ZZZ'):
         current = start
@@ -47,13 +42,13 @@ class Instructions:
             command = self.sequence[command_tick % len(self.sequence)]
             command_tick += 1
 
-            node = self.network.nodes[current]
+            node = self.nodes[current]
             current = node.left if command == 'L' else node.right
 
         return command_tick
 
     def ghost_steps(self):
-        starting_points = [x.label for x in filter(lambda x: x.label[-1] == "A", self.network.nodes.values())]
+        starting_points = [x.label for x in filter(lambda x: x.label[-1] == "A", self.nodes.values())]
 
         steps = [self.steps(x, lambda x: x[-1] == 'Z') for x in starting_points]
 

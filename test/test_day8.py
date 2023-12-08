@@ -31,8 +31,8 @@ XXX = (XXX, XXX)"""
 def test_parse():
     instructions = Instructions.from_str(test_input1)
 
-    assert instructions.network.nodes['AAA'].left == 'BBB'
-    assert instructions.network.nodes['AAA'].right == 'CCC'
+    assert instructions.nodes['AAA'].left == 'BBB'
+    assert instructions.nodes['AAA'].right == 'CCC'
 
 
 def test_steps():
