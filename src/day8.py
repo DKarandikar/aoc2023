@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 
 
@@ -37,10 +38,16 @@ class Instructions:
 
         return Instructions(sequence, Network(nodes))
 
-    def steps_to_zzz(self):
-        current = 'AAA'
+    def steps(self, start="AAA", end_fn=None):
+        current = start
         command_tick = 0
-        while current != 'ZZZ':
+
+        def is_finished(s: str) -> bool:
+            if end_fn:
+                return end_fn(s)
+            return s == 'ZZZ'
+
+        while not is_finished(current):
             command = self.sequence[command_tick % len(self.sequence)]
             command_tick += 1
 
@@ -49,12 +56,20 @@ class Instructions:
 
         return command_tick
 
+    def ghost_steps(self):
+        starting_points = [x.label for x in filter(lambda x: x.label[-1] == "A", self.network.nodes.values())]
+
+        steps = [self.steps(x, lambda x: x[-1] == 'Z') for x in starting_points]
+
+        return math.lcm(*steps)
+
 
 def main():
     with open("../data/day8.txt") as f:
         lines = f.read()
 
-    print(f"Day 8 part 1 is: {Instructions.from_str(lines).steps_to_zzz()}")
+    print(f"Day 8 part 1 is: {Instructions.from_str(lines).steps()}")
+    print(f"Day 8 part 2 is: {Instructions.from_str(lines).ghost_steps()}")
 
 
 if __name__ == "__main__":
