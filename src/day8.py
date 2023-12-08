@@ -1,5 +1,6 @@
 import math
 from dataclasses import dataclass
+from typing import Callable
 
 
 @dataclass
@@ -38,16 +39,11 @@ class Instructions:
 
         return Instructions(sequence, Network(nodes))
 
-    def steps(self, start="AAA", end_fn=None):
+    def steps(self, start: str = "AAA", end_fn: Callable[[str], bool] = lambda x: x == 'ZZZ'):
         current = start
         command_tick = 0
 
-        def is_finished(s: str) -> bool:
-            if end_fn:
-                return end_fn(s)
-            return s == 'ZZZ'
-
-        while not is_finished(current):
+        while not end_fn(current):
             command = self.sequence[command_tick % len(self.sequence)]
             command_tick += 1
 
