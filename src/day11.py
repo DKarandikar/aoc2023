@@ -49,10 +49,10 @@ class Universe:
         xs = sorted([galaxy1[0], galaxy2[0]])
         ys = sorted([galaxy1[1], galaxy2[1]])
 
-        special_rows = list(filter(lambda y: ys[0] < y < ys[1], self.empty_rows))
-        special_cols = list(filter(lambda x: xs[0] < x < xs[1], self.empty_columns))
+        empty_rows = list(filter(lambda y: ys[0] < y < ys[1], self.empty_rows))
+        empty_columns = list(filter(lambda x: xs[0] < x < xs[1], self.empty_columns))
 
-        return (xs[1] - xs[0]) + (ys[1] - ys[0]) + (len(special_rows) + len(special_cols)) * (expansion_factor - 1)
+        return (xs[1] - xs[0]) + (ys[1] - ys[0]) + (len(empty_rows) + len(empty_columns)) * (expansion_factor - 1)
 
     def sum_lengths(self, expansion_factor: int) -> int:
         pairs = itertools.combinations(self.galaxies, 2)
