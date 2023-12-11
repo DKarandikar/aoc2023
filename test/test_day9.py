@@ -19,3 +19,13 @@ def test_next():
     assert pattern1.next() == 18
     assert pattern2.next() == 28
     assert pattern3.next() == 68
+
+
+def test_previous():
+    pattern1 = Pattern.from_str(test_input.split("\n")[0])
+    pattern2 = Pattern.from_str(test_input.split("\n")[1])
+    pattern3 = Pattern.from_str(test_input.split("\n")[2])
+
+    assert pattern1.previous() == -3
+    assert pattern2.previous() == 0
+    assert pattern3.previous() == 5
