@@ -45,21 +45,21 @@ class Universe:
 
         return rv
 
-    def distance(self, galaxy1: tuple[int, int], galaxy2: tuple[int, int]) -> int:
+    def distance(self, galaxy1: tuple[int, int], galaxy2: tuple[int, int], expansion_factor: int) -> int:
         xs = sorted([galaxy1[0], galaxy2[0]])
         ys = sorted([galaxy1[1], galaxy2[1]])
 
         special_rows = list(filter(lambda y: ys[0] < y < ys[1], self.empty_rows))
         special_cols = list(filter(lambda x: xs[0] < x < xs[1], self.empty_columns))
 
-        return (xs[1] - xs[0]) + (ys[1] - ys[0]) + len(special_rows) + len(special_cols)
+        return (xs[1] - xs[0]) + (ys[1] - ys[0]) + (len(special_rows) + len(special_cols)) * (expansion_factor - 1)
 
-    def sum_lengths(self) -> int:
+    def sum_lengths(self, expansion_factor: int) -> int:
         pairs = itertools.combinations(self.galaxies, 2)
 
         rv = 0
         for pair in pairs:
-            rv += self.distance(pair[0], pair[1])
+            rv += self.distance(pair[0], pair[1], expansion_factor)
 
         return rv
 
@@ -68,7 +68,8 @@ def main():
     with open("../data/day11.txt") as f:
         lines = f.read()
 
-    print(f"Day 11 part 1 is: {Universe.from_str(lines).sum_lengths()}")
+    print(f"Day 11 part 1 is: {Universe.from_str(lines).sum_lengths(2)}")
+    print(f"Day 11 part 2 is: {Universe.from_str(lines).sum_lengths(1000000)}")
 
 
 if __name__ == "__main__":
