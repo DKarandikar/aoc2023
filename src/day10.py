@@ -66,22 +66,85 @@ class Grid:
 
         return valid_next
 
-    def get_loop_length(self) -> int:
+    def get_start_character(self) -> str:
+        """ Get the pipe shape that S corresponds to"""
+        conns = self.get_start_connections()
+        if (abs(conns[0][0] - conns[1][0])) == 2:
+            return '-'
+        if (abs(conns[0][1] - conns[1][1])) == 2:
+            return '|'
+        x, y = self.get_start()
+        from_origin = set((c[0] - x, c[1] - y) for c in conns)
+
+        if from_origin == {(0, 1), (1, 0)}:
+            return 'F'
+        if from_origin == {(0, 1), (-1, 0)}:
+            return '7'
+        if from_origin == {(0, -1), (1, 0)}:
+            return 'L'
+        if from_origin == {(0, -1), (-1, 0)}:
+            return 'J'
+
+        raise RuntimeError("Invalid Start")
+
+    def get_loop(self) -> list[tuple[int, int]]:
         sx, sy = self.get_start()
         start_conns = self.get_start_connections()
         x, y = start_conns[0]
-        steps = 2
+        loop = [(x, y)]
 
         while self.get(x, y) != 'S':
             n = self.get_next(x, y, (sx, sy))
             sx, sy = x, y
             x, y = n
-            steps += 1
+            loop.append((x, y))
 
-        return steps
+        return loop
+
+    def get_loop_length(self) -> int:
+        return len(self.get_loop())
 
     def get_farthest(self) -> int:
-        return (self.get_loop_length() - 1) // 2
+        return self.get_loop_length() // 2
+
+    def loop_only_grid(self):
+        loop = self.get_loop()
+        sx, sy = self.get_start()
+        clean = [['.'] * len(line) for line in self.pipes]
+        for coord in loop:
+            clean[coord[1]][coord[0]] = self.get(coord[0], coord[1])
+        clean[sy][sx] = self.get_start_character()
+        return clean
+
+    def enclosed(self) -> int:
+        """
+        To determine how much area is enclosed, first clean the grid, so it's just the loop and '.'s
+        Then count along each line keeping track of inside or outside
+        Vertical lines are trivial, the tricky case are FJL7 combinations may be U/n, or they may be vertical
+        lines also, so need to keep track of these
+        """
+        clean = self.loop_only_grid()
+        count = 0
+        recent = None
+        for row in clean:
+            outside = True
+            for char in row:
+                if char == '|':
+                    outside = not outside
+                if char in ('F', 'L'):
+                    recent = char
+                if char in ('7', 'J'):
+                    # If FJ or L7, then this forms a boundary, otherwise it forms a U/n and doesn't change outside state
+                    if recent and ((recent, char) == ('F', 'J') or (recent, char) == ('L', '7')):
+                        outside = not outside
+                        recent = None
+                    else:
+                        recent = None
+                elif char == '.':
+                    if not outside:
+                        count += 1
+
+        return count
 
 
 def main():
@@ -89,6 +152,7 @@ def main():
         lines = f.read()
 
     print(f"Day 10 part 1 is: {Grid.from_str(lines).get_farthest()}")
+    print(f"Day 10 part 2 is: {Grid.from_str(lines).enclosed()}")
 
 
 if __name__ == "__main__":
