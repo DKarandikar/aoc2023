@@ -36,6 +36,11 @@ class HotSprings:
         parts = s.split(" ")
         return HotSprings(parts[0], tuple(int(x) for x in parts[1].split(",")))
 
+    @staticmethod
+    def from_str_folded(s: str, folds=5):
+        parts = s.split(" ")
+        return HotSprings('?'.join([parts[0]]*folds), tuple(int(x) for x in (parts[1].split(",")*folds)))
+
     def arrangements(self) -> int:
         return count(self.row, self.groups)
 
@@ -45,6 +50,7 @@ def main():
         lines = f.read()
 
     print(f"Day 12 part 1 is: {sum([HotSprings.from_str(line).arrangements() for line in lines.split('\n')])}")
+    print(f"Day 12 part 2 is: {sum([HotSprings.from_str_folded(line).arrangements() for line in lines.split('\n')])}")
 
 
 if __name__ == "__main__":
