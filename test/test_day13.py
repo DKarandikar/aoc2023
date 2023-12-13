@@ -36,3 +36,15 @@ def test_score():
     patterns = Pattern.from_str(test_input)
 
     assert [p.score() for p in patterns] == [5, 400]
+
+
+def test_smudge():
+    patterns = Pattern.from_str(test_input, True)
+
+    assert [p.reflection() for p in patterns] == [('hor', 2), ('hor', 0)]
+
+
+def test_smudge_score():
+    patterns = Pattern.from_str(test_input, True)
+
+    assert [p.score() for p in patterns] == [300, 100]
