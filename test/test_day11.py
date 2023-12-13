@@ -1,4 +1,4 @@
-from src.day11 import Universe, flip
+from src.day11 import Universe
 
 test_input = """...#......
 .......#..
@@ -17,11 +17,6 @@ def test_expand():
 
     assert visible.empty_rows == [3, 7]
     assert visible.empty_columns == [2, 5, 8]
-
-
-def test_flip():
-    assert flip([[1, 2, 3], [4, 5, 6]]) == [[1, 4], [2, 5], [3, 6]]
-    assert flip([[1, 4], [2, 5], [3, 6]]) == [[1, 2, 3], [4, 5, 6]]
 
 
 def test_sum_lengths():
