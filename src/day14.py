@@ -34,12 +34,69 @@ class Rocks:
     def from_str(s: str):
         return Rocks(s.split("\n"))
 
+    def run_cycle(self):
+        self.slide_north()
+        self.slide_west()
+        self.slide_south()
+        self.slide_east()
+        return self
+
     def slide_north(self):
         rotated = flip_str(self.grid)
         rv = []
         for row in rotated:
             rv.append(roll_left(row))
         self.grid = flip_str(rv)
+        return self
+
+    def slide_west(self):
+        rv = []
+        for row in self.grid:
+            rv.append(roll_left(row))
+        self.grid = rv
+        return self
+
+    def slide_south(self):
+        rotated = flip_str(self.grid)
+        rv = []
+        for row in rotated:
+            rv.append(roll_left(row[::-1])[::-1])
+        self.grid = flip_str(rv)
+        return self
+
+    def slide_east(self):
+        rv = []
+        for row in self.grid:
+            rv.append(roll_left(row[::-1])[::-1])
+        self.grid = rv
+        return self
+
+    def key(self) -> str:
+        return "".join(self.grid)
+
+    def find_cycle_cycle(self):
+        tick = 0
+        cache = {self.key(): 0}
+        while True:
+            self.run_cycle()
+            tick += 1
+
+            if self.key() in cache:
+                break
+            cache[self.key()] = tick
+
+        return tick, cache[self.key()], self
+
+    def run_spin(self, cycles=1000000000):
+        loop_return, loop_start, rocks = self.find_cycle_cycle()
+        loop_length = loop_return - loop_start
+
+        rem = (cycles - loop_start) % loop_length
+
+        self.grid = rocks.grid
+        for _ in range(rem):
+            self.run_cycle()
+
         return self
 
     def load_north(self) -> int:
@@ -57,6 +114,7 @@ def main():
         lines = f.read()
 
     print(f"Day 14 part 1 is: {Rocks.from_str(lines).slide_north().load_north()}")
+    print(f"Day 14 part 2 is: {Rocks.from_str(lines).run_spin().load_north()}")
 
 
 if __name__ == "__main__":
