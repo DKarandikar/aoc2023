@@ -40,7 +40,7 @@ class State:
             for dir in v:
                 all_beams.append(Beam(k, dir))
 
-        return "".join(sorted([str(x) for x in all_beams]))
+        return "".join(sorted([str(x) for x in set(all_beams)]))
 
 
 @dataclass
@@ -85,7 +85,6 @@ class Grid:
             if val > best:
                 best = val
         return best
-
 
     def calculate_energized(self, initial_beam: Beam = Beam((0, 0), 'r')) -> int:
         state = State([initial_beam], {})
