@@ -1,4 +1,4 @@
-from src.day15 import hash_aoc
+from src.day15 import hash_aoc, run_instructions
 
 test_input = """rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7"""
 
@@ -9,3 +9,7 @@ def test_hash():
     assert hashes[1] == 253
 
     assert sum(hashes) == 1320
+
+
+def test_run():
+    assert run_instructions(test_input.split(",")) == 145
