@@ -180,8 +180,6 @@ class Grid:
 def main():
     with open("../data/day16.txt") as f:
         lines = f.read()
-        import cProfile
-        cProfile.runctx('Grid.from_str(lines).calculate_energized()', {'Grid': Grid, 'lines': lines}, {})
 
     print(f"Day 16 part 1 is: {Grid.from_str(lines).calculate_energized()}")
     print(f"Day 16 part 2 is: {Grid.from_str(lines).calculate_best_energized()}")
