@@ -18,6 +18,12 @@ def test_energized():
     assert grid.calculate_energized() == 46
 
 
+def test_best_energized():
+    grid = Grid.from_str(test_input)
+
+    assert grid.calculate_best_energized() == 51
+
+
 def test_do_step_dot():
     grid = Grid.from_str(test_input)
     state = State([Beam((0, 0), 'r')], {})

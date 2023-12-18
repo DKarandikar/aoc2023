@@ -62,8 +62,33 @@ class Grid:
     def get(self, x: int, y: int) -> str:
         return self.rows[y][x]
 
-    def calculate_energized(self) -> int:
-        state = State([Beam((0, 0), 'r')], {})
+    def calculate_best_energized(self):
+        best = 0
+        for x in range(self.width):
+            val = self.calculate_energized(Beam((x, 0), 'd'))
+            print(f"Done: {x}d")
+            if val > best:
+                best = val
+        for x in range(self.width):
+            val = self.calculate_energized(Beam((x, self.height - 1), 'u'))
+            print(f"Done: {x}u")
+            if val > best:
+                best = val
+        for y in range(self.height):
+            val = self.calculate_energized(Beam((0, y), 'r'))
+            print(f"Done: {y}r")
+            if val > best:
+                best = val
+        for y in range(self.height):
+            val = self.calculate_energized(Beam((self.width - 1, y), 'l'))
+            print(f"Done: {y}l")
+            if val > best:
+                best = val
+        return best
+
+
+    def calculate_energized(self, initial_beam: Beam = Beam((0, 0), 'r')) -> int:
+        state = State([initial_beam], {})
         so_far = {state.key()}
         while True:
             state = self.do_step(state)
@@ -128,6 +153,7 @@ def main():
         lines = f.read()
 
     print(f"Day 16 part 1 is: {Grid.from_str(lines).calculate_energized()}")
+    print(f"Day 16 part 2 is: {Grid.from_str(lines).calculate_best_energized()}")
 
 
 if __name__ == "__main__":
