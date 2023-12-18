@@ -3,6 +3,10 @@ from typing import Literal
 
 Direction = Literal['r', 'l', 'u', 'd']
 
+DirTuple = tuple[bool, bool, bool, bool]  # rlud
+
+NumDirections = 4
+
 
 @dataclass
 class Beam:
@@ -31,16 +35,41 @@ class Beam:
 @dataclass
 class State:
     next: list[Beam]
-    existing: dict[tuple[int, int], set[Direction]]
+    existing: int
+    width: int
+    height: int
 
-    def key(self) -> str:
-        all_beams = [*self.next]
+    @staticmethod
+    def from_beam(initial: Beam, height: int, width: int):
+        return State(
+            [initial],
+            0,
+            width,
+            height,
+        )
 
-        for k, v in self.existing.items():
-            for dir in v:
-                all_beams.append(Beam(k, dir))
+    @staticmethod
+    def add_beam_e(existing: int, width: int, beam: Beam) -> int:
+        if beam.dir == 'r':
+            rv = existing | 1<<((beam.location[0] * NumDirections) + (NumDirections * width * beam.location[1]))
+        elif beam.dir == 'l':
+            rv = existing | 1<<((beam.location[0] * NumDirections) + (NumDirections * width * beam.location[1]) + 1)
+        elif beam.dir == 'u':
+            rv = existing | 1<<((beam.location[0] * NumDirections) + (NumDirections * width * beam.location[1]) + 2)
+        elif beam.dir == 'd':
+            rv = existing | 1<<((beam.location[0] * NumDirections) + (NumDirections * width * beam.location[1]) + 3)
 
-        return "".join(sorted([str(x) for x in set(all_beams)]))
+        return rv
+
+    def add_beam(self, beam: Beam):
+        self.existing = self.add_beam_e(self.existing, self.width, beam)
+
+    def key(self) -> int:
+        existing = int(self.existing)
+        for beam in self.next:
+            existing = self.add_beam_e(existing, self.width, beam)
+
+        return existing
 
 
 @dataclass
@@ -87,7 +116,7 @@ class Grid:
         return best
 
     def calculate_energized(self, initial_beam: Beam = Beam((0, 0), 'r')) -> int:
-        state = State([initial_beam], {})
+        state = State.from_beam(initial_beam, self.height, self.width)
         so_far = {state.key()}
         while True:
             state = self.do_step(state)
@@ -97,16 +126,17 @@ class Grid:
             else:
                 so_far.add(key)
 
-        return len(state.existing)
+        bin_string = bin(state.existing)[2:]
+        chunks = [bin_string[i:i+NumDirections] for i in range(0, len(bin_string), NumDirections)]
+        return sum([1 if '1' in x else 0 for x in chunks])
 
     def beam_inside(self, b: Beam) -> bool:
         return (0 <= b.location[0] < self.width) and (0 <= b.location[1] < self.height)
 
     def do_step(self, s: State) -> State:
-        new_state = State([], s.existing)
+        new_state = State([], s.existing, s.width, s.height)
         for beam in s.next:
-            dirs = new_state.existing.setdefault(beam.location, set())
-            dirs.add(beam.dir)
+            new_state.add_beam(beam)
 
             action = self.get(beam.location[0], beam.location[1])
 
@@ -150,6 +180,8 @@ class Grid:
 def main():
     with open("../data/day16.txt") as f:
         lines = f.read()
+        import cProfile
+        cProfile.runctx('Grid.from_str(lines).calculate_energized()', {'Grid': Grid, 'lines': lines}, {})
 
     print(f"Day 16 part 1 is: {Grid.from_str(lines).calculate_energized()}")
     print(f"Day 16 part 2 is: {Grid.from_str(lines).calculate_best_energized()}")
