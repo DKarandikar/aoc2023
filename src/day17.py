@@ -9,7 +9,10 @@ class HeatMap:
     def from_str(s: str) -> 'HeatMap':
         return HeatMap([[int(x) for x in y] for y in s.split("\n")])
 
-    def explore(self) -> int:
+    def explore_ultra(self) -> int:
+        return self.explore(4, 10)
+
+    def explore(self, min_steps=0, max_steps=3) -> int:
         queue = [(0, 0, 0, 's', 0)]  # dir can be stationary, r, l, u or d
         heapify(queue)
         visited = set()
@@ -35,7 +38,7 @@ class HeatMap:
         while queue:
             heat_loss, x, y, direction, steps = heappop(queue)
 
-            if x == len(self.grid[0]) - 1 and y == len(self.grid) - 1:
+            if steps >= min_steps and x == len(self.grid[0]) - 1 and y == len(self.grid) - 1:
                 return heat_loss
 
             if (x, y, direction, steps) in visited:
@@ -43,13 +46,14 @@ class HeatMap:
 
             visited.add((x, y, direction, steps))
 
-            if steps < 3 and direction != 's':
+            if steps < max_steps and direction != 's':
                 add(heat_loss, x, y, direction, steps + 1)
 
-            for new_dir in ('l', 'r', 'u', 'd'):
-                if new_dir != direction:
-                    if (new_dir, direction) not in [('u', 'd'), ('d', 'u'), ('l', 'r'), ('r', 'l')]:
-                        add(heat_loss, x, y, new_dir, 1)
+            if steps >= min_steps or direction == 's':
+                for new_dir in ('l', 'r', 'u', 'd'):
+                    if new_dir != direction:
+                        if (new_dir, direction) not in [('u', 'd'), ('d', 'u'), ('l', 'r'), ('r', 'l')]:
+                            add(heat_loss, x, y, new_dir, 1)
 
         raise RuntimeError("Didn't get to end")
 
@@ -59,6 +63,7 @@ def main():
         lines = f.read()
 
     print(f"Day 17 part 1 is: {HeatMap.from_str(lines).explore()}")
+    print(f"Day 17 part 2 is: {HeatMap.from_str(lines).explore_ultra()}")
 
 
 if __name__ == "__main__":

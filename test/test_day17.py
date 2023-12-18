@@ -1,3 +1,5 @@
+import pytest
+
 from src.day17 import HeatMap
 
 test_input = """2413432311323
@@ -14,8 +16,21 @@ test_input = """2413432311323
 2546548887735
 4322674655533"""
 
+test_input2 = """111111111111
+999999999991
+999999999991
+999999999991
+999999999991"""
+
 
 def test_explore():
     heat_map = HeatMap.from_str(test_input)
 
     assert heat_map.explore() == 102
+
+
+@pytest.mark.parametrize("t_input,expected", [(test_input, 94), (test_input2, 71)])
+def test_explore_ultra(t_input, expected):
+    heat_map = HeatMap.from_str(t_input)
+
+    assert heat_map.explore_ultra() == expected
