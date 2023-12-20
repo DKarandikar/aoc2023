@@ -3,6 +3,12 @@ from dataclasses import dataclass
 
 
 @dataclass
+class Range:
+    start: int
+    length: int
+
+
+@dataclass
 class Part:
     x: int
     m: int
@@ -18,6 +24,20 @@ class Part:
 
     def val_sum(self) -> int:
         return self.a + self.s + self.m + self.x
+
+
+@dataclass
+class PartRange:
+    x: Range
+    m: Range
+    a: Range
+    s: Range
+
+    def product(self) -> int:
+        return self.x.length * self.m.length * self.a.length * self.s.length
+
+    def set(self, char: str, r: Range) -> 'PartRange':
+        return PartRange(**{'x': self.x, 'm': self.m, 'a': self.a, 's': self.s, char: r})
 
 
 @dataclass
@@ -57,6 +77,49 @@ class Rule:
         elif not less_than and attribute > val:
             return self.output
 
+    def run_part_range(self, part_range: PartRange) -> tuple[dict[str, PartRange], PartRange | None]:
+        if self.ev is None:
+            return {self.output: part_range}, None
+
+        if '<' in self.ev:
+            less_than = True
+            val = int(self.ev.split('<')[1])
+        else:
+            less_than = False
+            val = int(self.ev.split('>')[1])
+
+        char = self.ev[0]
+        if char == 'a':
+            attribute = part_range.a
+        elif char == 'x':
+            attribute = part_range.x
+        elif char == 's':
+            attribute = part_range.s
+        else:
+            attribute = part_range.m
+
+        if less_than:
+            if val < attribute.start:
+                return {}, part_range
+            if val >= attribute.start + attribute.length:
+                return {self.output: [part_range]}, None
+            difference = val - attribute.start
+            remainder = attribute.length - difference
+
+            return ({self.output: part_range.set(char, Range(attribute.start, difference))},
+                    part_range.set(char, Range(attribute.start + difference, remainder)))
+
+        else:
+            if val > attribute.start + attribute.length:
+                return {}, part_range
+            if val <= attribute.start:
+                return {self.output: [part_range]}, None
+            difference = 1 + val - attribute.start
+            remainder = attribute.length - difference
+
+            return ({self.output: part_range.set(char, Range(attribute.start + difference, remainder))},
+                    part_range.set(char, Range(attribute.start, difference)))
+
 
 @dataclass
 class Workflow:
@@ -76,6 +139,19 @@ class Workflow:
             if output is not None:
                 return output
         raise RuntimeError("Failed to pass part through workflow")
+
+    def run_ranges(self, part_ranges: list[PartRange]) -> dict[str, list[PartRange]]:
+        rv = {}
+        for part_range in part_ranges:
+            remainder = part_range
+            for rule in self.rules:
+                res, remainder = rule.run_part_range(remainder)
+                for k, v in res.items():
+                    entry = rv.setdefault(k, [])
+                    entry.append(v)
+                if remainder is None:
+                    break
+        return rv
 
 
 @dataclass
@@ -113,12 +189,27 @@ class PartSorter:
 
         return rv
 
+    def distinct_combo(self) -> int:
+        initialRange = PartRange(Range(1, 4000), Range(1, 4000), Range(1, 4000), Range(1, 4000))
+        output = {"in": [initialRange]}
+        while set(output.keys()) != {"A", "R"}:
+            keys = filter(lambda x: x not in ('A', 'R'), list(output.keys()))
+            next_key = list(keys)[0]
+            next_list = output.pop(next_key)
+            res = self.workflow_map[next_key].run_ranges(next_list)
+            for k, v in res.items():
+                entry = output.setdefault(k, [])
+                entry.extend(v)
+
+        return sum([x.product() for x in output['A']])
+
 
 def main():
     with open("../data/day19.txt") as f:
         lines = f.read()
 
     print(f"Day 19 part 1 is: {PartSorter.from_str(lines).accepted_part_sum()}")
+    print(f"Day 19 part 2 is: {PartSorter.from_str(lines).distinct_combo()}")
 
 
 if __name__ == "__main__":

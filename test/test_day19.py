@@ -1,4 +1,4 @@
-from src.day19 import PartSorter
+from src.day19 import PartSorter, PartRange, Range
 
 test_input = """px{a<2006:qkq,m>2090:A,rfg}
 pv{a>1716:R,A}
@@ -23,3 +23,16 @@ def test_part_sum():
     part_sorter = PartSorter.from_str(test_input)
 
     assert part_sorter.accepted_part_sum() == 19114
+
+
+def test_combination():
+    part_sorter = PartSorter.from_str(test_input)
+
+    assert part_sorter.distinct_combo() == 167409079868000
+
+
+def test_part_range_set():
+    initialRange = PartRange(Range(1, 3999), Range(1, 3999), Range(1, 3999), Range(1, 3999))
+
+    assert initialRange.set('a', Range(1, 1)).a == Range(1, 1)
+
